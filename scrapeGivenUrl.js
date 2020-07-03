@@ -1,14 +1,9 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const keywords = require("./keywords/keywords");
 
 function scrape(url) {
-    axios.get(url).then((response) => {
-        let $ = cheerio.load(response.data);
-        let siteText = $('main').text();
-        
-    }).catch(err => {
-        console.log(err);
-    })
+    return keywords(url)
 }
 
 module.exports = scrape;

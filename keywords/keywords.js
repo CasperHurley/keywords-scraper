@@ -19,10 +19,11 @@ const {
     getWikipediaJsLibsKeywords,
     getWikipediaJavaFwrksKeywords
 } = require("./sources/wikipedia");
+const {scrapeHackernoon, getHackernoonKeywords} = require("./sources/hackernoon");
 
-
-function keywords() {
+function keywords(comparisonURL) {
     axios.all([
+        axios.get(comparisonURL),
         scrapeZiprecruiter(),
         scrapeJobscan(),
         scrapeEcpiUniversity(),
@@ -31,10 +32,12 @@ function keywords() {
         scrapeSkillcrush(),
         scrapeParkersoftware(),
         scrapeWikipediaJsLibs(),
-        scrapeWikipediaJavaFwrks()
+        scrapeWikipediaJavaFwrks(),        
+        scrapeHackernoon()
     ]).then(
         axios.spread(
             function(
+                comarisonUrlResp,
                 ziprecruiterResp, 
                 jobscanResp,
                 ecpiUniversityResp,
@@ -43,18 +46,25 @@ function keywords() {
                 skillcrushResp,
                 parkersoftwareResp,
                 wikipediaJsLibsResp,
-                wikipediaJavaFwrksResp
+                wikipediaJavaFwrksResp,
+                hackernoonResp
             ) {
-                gatherAllKeywords(
-                    getZiprecruiterKeywords(cheerio.load(ziprecruiterResp.data)),
-                    getJobscanKeywords(cheerio.load(jobscanResp.data)),
-                    getEcpiUniversityKeywords(cheerio.load(ecpiUniversityResp.data)),
-                    getCareerfoundry1Keywords(cheerio.load(careerfoundry1Resp.data)),
-                    getCareerfoundry2Keywords(cheerio.load(careerfoundry2Resp.data)),
-                    getSkillcrushKeywords(cheerio.load(skillcrushResp.data)),
-                    getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data)),
-                    getWikipediaJsLibsKeywords(cheerio.load(wikipediaJsLibsResp.data)),
-                    getWikipediaJavaFwrksKeywords(cheerio.load(wikipediaJavaFwrksResp.data))
+
+                extractKeywordsFromComparisonURL(
+                    comparisonURL,
+                    cheerio.load(comarisonUrlResp.data),
+                    gatherAllKeywords(
+                        getZiprecruiterKeywords(cheerio.load(ziprecruiterResp.data)),
+                        getJobscanKeywords(cheerio.load(jobscanResp.data)),
+                        getEcpiUniversityKeywords(cheerio.load(ecpiUniversityResp.data)),
+                        getCareerfoundry1Keywords(cheerio.load(careerfoundry1Resp.data)),
+                        getCareerfoundry2Keywords(cheerio.load(careerfoundry2Resp.data)),
+                        getSkillcrushKeywords(cheerio.load(skillcrushResp.data)),
+                        getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data)),
+                        getWikipediaJsLibsKeywords(cheerio.load(wikipediaJsLibsResp.data)),
+                        getWikipediaJavaFwrksKeywords(cheerio.load(wikipediaJavaFwrksResp.data)),
+                        getHackernoonKeywords(cheerio.load(hackernoonResp.data))
+                    )
                 )
             }
         )
@@ -72,7 +82,8 @@ function gatherAllKeywords(
     skillcrushKeywords,
     parkersoftwareKeywords,
     wikipediaJsLibsKeywords,
-    wikipediaJavaFwrksKeywords
+    wikipediaJavaFwrksKeywords,
+    hackernoonKeywords
 ) {
     let allKeywords = 
         _.union(
@@ -84,10 +95,22 @@ function gatherAllKeywords(
             allSameCase(skillcrushKeywords),
             allSameCase(parkersoftwareKeywords),
             allSameCase(wikipediaJsLibsKeywords),
-            allSameCase(wikipediaJavaFwrksKeywords)
+            allSameCase(wikipediaJavaFwrksKeywords),
+            allSameCase(hackernoonKeywords)
         )
-    console.log(allKeywords.sort());
     return allKeywords.sort();
+}
+
+function extractKeywordsFromComparisonURL(url, $, allKeywords) {
+    $('body *').contents().find("script,noscript,style").remove()
+    var siteText = $('body *').contents().map(function() {
+        return (this.type === 'text') ? $(this).text()+' ' : '';
+    }).get().join('');
+
+    console.log(siteText)
+    console.log(allKeywords.filter((term) => {
+        return siteText.toUpperCase().includes(term);
+    }))
 }
 
 module.exports = keywords
