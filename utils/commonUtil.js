@@ -32,7 +32,7 @@ function removeAllBeforeCharacter(string, char) {
 
 function addInSplitTerms(keywords, splitChar, charToReplace) {
     let withSplitTerms = []
-    keywords.forEach((term, index) => {
+    keywords.forEach((term) => {
         if (term.includes(splitChar)) {
             let split = term.replace(charToReplace, "").split(splitChar)
             split.forEach(newTerm => {

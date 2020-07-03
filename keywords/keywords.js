@@ -13,6 +13,13 @@ const {
 } = require("./sources/careerfoundry");
 const {scrapeSkillcrush, getSkillcrushKeywords} = require("./sources/skillcrush");
 const {scrapeParkersoftware, getParkersoftwareKeywords} = require("./sources/parkersoftware");
+const {
+    scrapeWikipediaJsLibs,
+    scrapeWikipediaJavaFwrks,
+    getWikipediaJsLibsKeywords,
+    getWikipediaJavaFwrksKeywords
+} = require("./sources/wikipedia");
+
 
 function keywords() {
     axios.all([
@@ -22,7 +29,9 @@ function keywords() {
         scrapeCareerfoundry1(),
         scrapeCareerfoundry2(),
         scrapeSkillcrush(),
-        scrapeParkersoftware()
+        scrapeParkersoftware(),
+        scrapeWikipediaJsLibs(),
+        scrapeWikipediaJavaFwrks()
     ]).then(
         axios.spread(
             function(
@@ -32,7 +41,9 @@ function keywords() {
                 careerfoundry1Resp,
                 careerfoundry2Resp,
                 skillcrushResp,
-                parkersoftwareResp
+                parkersoftwareResp,
+                wikipediaJsLibsResp,
+                wikipediaJavaFwrksResp
             ) {
                 gatherAllKeywords(
                     getZiprecruiterKeywords(cheerio.load(ziprecruiterResp.data)),
@@ -41,7 +52,9 @@ function keywords() {
                     getCareerfoundry1Keywords(cheerio.load(careerfoundry1Resp.data)),
                     getCareerfoundry2Keywords(cheerio.load(careerfoundry2Resp.data)),
                     getSkillcrushKeywords(cheerio.load(skillcrushResp.data)),
-                    getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data))
+                    getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data)),
+                    getWikipediaJsLibsKeywords(cheerio.load(wikipediaJsLibsResp.data)),
+                    getWikipediaJavaFwrksKeywords(cheerio.load(wikipediaJavaFwrksResp.data))
                 )
             }
         )
@@ -57,7 +70,9 @@ function gatherAllKeywords(
     careerfoundry1Keywords,
     careerfoundry2Keywords,
     skillcrushKeywords,
-    parkersoftwareKeywords
+    parkersoftwareKeywords,
+    wikipediaJsLibsKeywords,
+    wikipediaJavaFwrksKeywords
 ) {
     let allKeywords = 
         _.union(
@@ -67,7 +82,9 @@ function gatherAllKeywords(
             allSameCase(careerfoundry1Keywords),
             allSameCase(careerfoundry2Keywords),
             allSameCase(skillcrushKeywords),
-            allSameCase(parkersoftwareKeywords)
+            allSameCase(parkersoftwareKeywords),
+            allSameCase(wikipediaJsLibsKeywords),
+            allSameCase(wikipediaJavaFwrksKeywords)
         )
     console.log(allKeywords.sort());
     return allKeywords.sort();
