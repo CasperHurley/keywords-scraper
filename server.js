@@ -1,18 +1,14 @@
 const express = require("express");
 const app = express();
-const keywords = require("./keywords/keywords");
+const cors = require("cors");
 
-app.get("/*", function(req, res) {
-    try {
-        if (req.body && req.body.url) {
-            res.json(keywords(req.body.url));
-        } else {
-            throw new Error(400)
-        }
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(err);
-    }
+app.use(cors());
+
+const keywordsController = require("./keywords/keywordsController.js");
+app.use("/api/scrape", keywordsController);
+
+app.use("/", function(req, res) {
+    res.sendStatus(404);
 })
 
 const PORT = process.env.PORT || 3001;
