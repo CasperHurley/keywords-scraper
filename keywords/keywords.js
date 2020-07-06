@@ -70,6 +70,7 @@ function keywords(comparisonURL) {
         )
     ).catch(err => {
         console.log(err);
+        throw new Error(500);
     })
 }
 

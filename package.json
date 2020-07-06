@@ -1,10 +1,11 @@
 {
   "name": "smart-resource-scraper",
   "version": "1.0.0",
-  "description": "Scrapes a control of sites (like Wikipedia) for relevant keywords (like react, javascript, node, ios, etc.). Takes in a url for a website and cross-references the scraped content with the keywords, returns JSON.",
+  "description": "Scrapes sites (like Wikipedia) for relevant keywords (like react, javascript, node, ios, etc.). Takes in a url for a website and cross-references the scraped content with the keywords, returns JSON.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start:watch": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

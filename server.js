@@ -2,13 +2,17 @@ const express = require("express");
 const app = express();
 const keywords = require("./keywords/keywords");
 
-app.get("/api/url/:encodedURL", function (req, res) {
-    let url = "https://www.freecodecamp.org/news/create-a-react-frontend-a-node-express-backend-and-connect-them-together-c5798926047c/"
-    keywords(url)
-})
-
 app.get("/*", function(req, res) {
-    res.sendStatus(404);
+    try {
+        if (req.body && req.body.url) {
+            res.json(keywords(req.body.url));
+        } else {
+            throw new Error(400)
+        }
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(err);
+    }
 })
 
 const PORT = process.env.PORT || 3001;
