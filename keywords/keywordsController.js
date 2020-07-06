@@ -24,120 +24,66 @@ const {
 const {scrapeHackernoon, getHackernoonKeywords} = require("./sources/hackernoon");
 const {scrapeRaygun, getRaygunKeywords} = require("./sources/raygun");
 
-router.get("/", function(req, res) {
-    let scrapeURL = "https://reactjs.org/tutorial/tutorial.html"
-    console.log(req.body, req.data)
-    axios.all([
-        axios.get(scrapeURL),
-        scrapeZiprecruiter(),
-        scrapeJobscan(),
-        scrapeEcpiUniversity(),
-        scrapeCareerfoundry1(),
-        scrapeCareerfoundry2(),
-        scrapeSkillcrush(),
-        scrapeParkersoftware(),
-        scrapeWikipediaJsLibs(),
-        scrapeWikipediaJavaFwrks(),        
-        scrapeHackernoon(),
-        scrapeRaygun()
-    ]).then(
-        axios.spread(
-            function(
-                scrapeUrlResp,
-                ziprecruiterResp, 
-                jobscanResp,
-                ecpiUniversityResp,
-                careerfoundry1Resp,
-                careerfoundry2Resp,
-                skillcrushResp,
-                parkersoftwareResp,
-                wikipediaJsLibsResp,
-                wikipediaJavaFwrksResp,
-                hackernoonResp,
-                raygunResp
-            ) {
-                res.json(
-                    extractKeywordsFromScrapeURL(
-                        scrapeURL,
-                        cheerio.load(scrapeUrlResp.data),
-                        gatherAllKeywords(
-                            getZiprecruiterKeywords(cheerio.load(ziprecruiterResp.data)),
-                            getJobscanKeywords(cheerio.load(jobscanResp.data)),
-                            getEcpiUniversityKeywords(cheerio.load(ecpiUniversityResp.data)),
-                            getCareerfoundry1Keywords(cheerio.load(careerfoundry1Resp.data)),
-                            getCareerfoundry2Keywords(cheerio.load(careerfoundry2Resp.data)),
-                            getSkillcrushKeywords(cheerio.load(skillcrushResp.data)),
-                            getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data)),
-                            getWikipediaJsLibsKeywords(cheerio.load(wikipediaJsLibsResp.data)),
-                            getWikipediaJavaFwrksKeywords(cheerio.load(wikipediaJavaFwrksResp.data)),
-                            getHackernoonKeywords(cheerio.load(hackernoonResp.data)),
-                            getRaygunKeywords(cheerio.load(raygunResp.data))
+router.post("/", function(req, res) {
+    if (req.body && req.body.scrapeURL) {
+        axios.all([
+            axios.get(req.body.scrapeURL),
+            scrapeZiprecruiter(),
+            scrapeJobscan(),
+            scrapeEcpiUniversity(),
+            scrapeCareerfoundry1(),
+            scrapeCareerfoundry2(),
+            scrapeSkillcrush(),
+            scrapeParkersoftware(),
+            scrapeWikipediaJsLibs(),
+            scrapeWikipediaJavaFwrks(),        
+            scrapeHackernoon(),
+            scrapeRaygun()
+        ]).then(
+            axios.spread(
+                function(
+                    scrapeUrlResp,
+                    ziprecruiterResp, 
+                    jobscanResp,
+                    ecpiUniversityResp,
+                    careerfoundry1Resp,
+                    careerfoundry2Resp,
+                    skillcrushResp,
+                    parkersoftwareResp,
+                    wikipediaJsLibsResp,
+                    wikipediaJavaFwrksResp,
+                    hackernoonResp,
+                    raygunResp
+                ) {
+                    res.json(
+                        extractKeywordsFromScrapeURL(
+                            req.body.scrapeURL,
+                            cheerio.load(scrapeUrlResp.data),
+                            gatherAllKeywords(
+                                getZiprecruiterKeywords(cheerio.load(ziprecruiterResp.data)),
+                                getJobscanKeywords(cheerio.load(jobscanResp.data)),
+                                getEcpiUniversityKeywords(cheerio.load(ecpiUniversityResp.data)),
+                                getCareerfoundry1Keywords(cheerio.load(careerfoundry1Resp.data)),
+                                getCareerfoundry2Keywords(cheerio.load(careerfoundry2Resp.data)),
+                                getSkillcrushKeywords(cheerio.load(skillcrushResp.data)),
+                                getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data)),
+                                getWikipediaJsLibsKeywords(cheerio.load(wikipediaJsLibsResp.data)),
+                                getWikipediaJavaFwrksKeywords(cheerio.load(wikipediaJavaFwrksResp.data)),
+                                getHackernoonKeywords(cheerio.load(hackernoonResp.data)),
+                                getRaygunKeywords(cheerio.load(raygunResp.data))
+                            )
                         )
                     )
-                )
-            }
-        )
-    ).catch(err => {
-        console.log(err);
-        res.sendStatus(500)
-    })
+                }
+            )
+        ).catch(err => {
+            console.log(err);
+            res.sendStatus(500)
+        })
+    } else {
+        res.sendStatus(400);
+    }
 })
-
-// function keywords(comparisonURL) {
-//     axios.all([
-//         axios.get(comparisonURL),
-//         scrapeZiprecruiter(),
-//         scrapeJobscan(),
-//         scrapeEcpiUniversity(),
-//         scrapeCareerfoundry1(),
-//         scrapeCareerfoundry2(),
-//         scrapeSkillcrush(),
-//         scrapeParkersoftware(),
-//         scrapeWikipediaJsLibs(),
-//         scrapeWikipediaJavaFwrks(),        
-//         scrapeHackernoon(),
-//         scrapeRaygun()
-//     ]).then(
-//         axios.spread(
-//             function(
-//                 comarisonUrlResp,
-//                 ziprecruiterResp, 
-//                 jobscanResp,
-//                 ecpiUniversityResp,
-//                 careerfoundry1Resp,
-//                 careerfoundry2Resp,
-//                 skillcrushResp,
-//                 parkersoftwareResp,
-//                 wikipediaJsLibsResp,
-//                 wikipediaJavaFwrksResp,
-//                 hackernoonResp,
-//                 raygunResp
-//             ) {
-
-//                 extractKeywordsFromComparisonURL(
-//                     comparisonURL,
-//                     cheerio.load(comarisonUrlResp.data),
-//                     gatherAllKeywords(
-//                         getZiprecruiterKeywords(cheerio.load(ziprecruiterResp.data)),
-//                         getJobscanKeywords(cheerio.load(jobscanResp.data)),
-//                         getEcpiUniversityKeywords(cheerio.load(ecpiUniversityResp.data)),
-//                         getCareerfoundry1Keywords(cheerio.load(careerfoundry1Resp.data)),
-//                         getCareerfoundry2Keywords(cheerio.load(careerfoundry2Resp.data)),
-//                         getSkillcrushKeywords(cheerio.load(skillcrushResp.data)),
-//                         getParkersoftwareKeywords(cheerio.load(parkersoftwareResp.data)),
-//                         getWikipediaJsLibsKeywords(cheerio.load(wikipediaJsLibsResp.data)),
-//                         getWikipediaJavaFwrksKeywords(cheerio.load(wikipediaJavaFwrksResp.data)),
-//                         getHackernoonKeywords(cheerio.load(hackernoonResp.data)),
-//                         getRaygunKeywords(cheerio.load(raygunResp.data))
-//                     )
-//                 )
-//             }
-//         )
-//     ).catch(err => {
-//         console.log(err);
-//         throw new Error(500);
-//     })
-// }
 
 function gatherAllKeywords(
     ziprecruiterKeywords, 
