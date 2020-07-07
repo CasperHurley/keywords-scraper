@@ -18,3 +18,10 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, function(req, res) {
     console.log("Express app running on port: ", PORT);
 })
+
+// add count of each term for analytics
+// add sort query values
+    // req.query.sortKey
+        // "keyword", "count"
+    // req.query.sortDirection 
+        // asc, desc

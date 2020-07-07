@@ -5,7 +5,7 @@ const cheerio = require("cheerio");
 // const redis = require("redis");
 // const client = redis.createClient();
 const _ = require("lodash");
-const {allSameCase} = require("../utils/commonUtil")
+const {allSameCase, getNumberOfOccurences} = require("../utils/commonUtil")
 const {scrapeZiprecruiter, getZiprecruiterKeywords} = require("./sources/ziprecruiter");
 const {scrapeJobscan, getJobscanKeywords} = require("./sources/jobscan");
 const {scrapeEcpiUniversity, getEcpiUniversityKeywords} = require("./sources/ecpiUniversity");
@@ -120,6 +120,8 @@ function extractKeywordsFromScrapeURL(scrapeURL, $, allKeywords) {
     var siteText = $('body *').contents().map(function() {
         return (this.type === 'text') ? $(this).text()+' ' : '';
     }).get().join('');
+
+    // getNumberOfOccurences();
 
     return allKeywords.filter((term) => {
         return siteText.toUpperCase().includes(term);

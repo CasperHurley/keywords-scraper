@@ -45,11 +45,16 @@ function addInSplitTerms(keywords, splitChar, charToReplace) {
     return withSplitTerms;
 }
 
+function getNumberOfOccurences(siteText, keyword) {
+    return (siteText.match(new RegExp(keyword, "g")) || []).length;
+}
+
 module.exports = {
     combineArraysOfObjectsNoDuplicates,
     getOnlyKeywordsFromArrayOfObjects,
     getUnionOfArrays,
     allSameCase,
     removeAllBeforeCharacter,
-    addInSplitTerms
+    addInSplitTerms,
+    getNumberOfOccurences
 }
